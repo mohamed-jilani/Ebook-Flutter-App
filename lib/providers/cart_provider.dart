@@ -14,4 +14,5 @@ class CartProvider with ChangeNotifier {
     _cartCount++;
     notifyListeners();
   }
+  
 }

@@ -7,6 +7,7 @@ import '../screens/book_detail_screen.dart'; // Import de la page de détail du 
 import 'package:badges/badges.dart' as badges;
 import 'package:provider/provider.dart';
 import '../screens/cart_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart'; // Import pour le cache des images
 
 class BookListScreen extends StatefulWidget {
   const BookListScreen({super.key});
@@ -81,7 +82,6 @@ class _BookListScreenState extends State<BookListScreen> {
           ),
         ],
       ),
-
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -101,14 +101,62 @@ class _BookListScreenState extends State<BookListScreen> {
                         MaterialPageRoute(
                           builder:
                               (context) => BookDetailScreen(
-                                bookId: book['_id'],
-                              ), // Passer l'ID du livre
+                                bookId: book['_id'], // Passer l'ID du livre
+                              ),
                         ),
                       );
                     },
-                    child: BookCard(
-                      book: book,
-                    ), // Utilisation du widget BookCard stylisé
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
+                      child: ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            8.0,
+                          ), // Arrondir les coins
+                          child: Material(
+                            elevation: 4.0, // Ombre autour de l'image
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: AspectRatio(
+                              aspectRatio: 2 / 3,
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    book['coverUrl'] ??
+                                    'https://res.cloudinary.com/dpkomjjhj/image/upload/v1745603218/default_cover_prfhnu.png',
+                                width: 60,
+                                height: 120,
+                                fit: BoxFit.cover,
+                                placeholder:
+                                    (context, url) =>
+                                        const CircularProgressIndicator(), // Indicateur pendant le chargement
+                                errorWidget:
+                                    (context, url, error) => const Icon(
+                                      Icons.error,
+                                      size: 40,
+                                    ), // Icône d'erreur si l'image ne se charge pas
+                              ),
+                            ),
+                          ),
+                        ),
+                        title: Text(book['title']),
+                        subtitle: Text(
+                          '${book['description']}\n${book['price']}€',
+                        ),
+                        isThreeLine: true,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      BookDetailScreen(bookId: book['_id']),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   );
                 },
               ),

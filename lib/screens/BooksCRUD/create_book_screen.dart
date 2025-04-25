@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../models/category.dart';
 
 class CreateBookScreen extends StatefulWidget {
   const CreateBookScreen({super.key});
@@ -17,35 +20,31 @@ class _CreateBookScreenState extends State<CreateBookScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
+  final _authorController = TextEditingController();
   String? _selectedCategoryId;
   File? _selectedImage;
 
   // Liste fictive des catégories
-  final List<Map<String, String>> _categories = [
-    {'id': '68018fc51f80969f0be18d6c', 'name': 'Science'},
-    {'id': '68018fc51f80969f0be18d6d', 'name': 'Histoire'},
-    {'id': '68018fc51f80969f0be18d6e', 'name': 'Technologie'},
-    {'id': '68018fc51f80969f0be18d6f', 'name': 'Art'},
-    {'id': '68018fc51f80969f0be18d70', 'name': 'Musique'},
-    {'id': '68018fc51f80969f0be18d71', 'name': 'Cuisine'},
-    {'id': '68018fc51f80969f0be18d72', 'name': 'Voyage'},
-    {'id': '68018fc51f80969f0be18d73', 'name': 'Fiction'},
-    {'id': '68018fc51f80969f0be18d74', 'name': 'Non-fiction'},
-    {'id': '68018fc51f80969f0be18d75', 'name': 'Biographie'},
-    {'id': '68018fc51f80969f0be18d76', 'name': 'Enfance'},
-    {'id': '68018fc51f80969f0be18d77', 'name': 'Poésie'},
-    {'id': '68018fc51f80969f0be18d78', 'name': 'Philosophie'},
-    {'id': '68018fc51f80969f0be18d79', 'name': 'Psychologie'},
-    {'id': '68018fc51f80969f0be18d7a', 'name': 'Sociologie'},
-    {'id': '68018fc51f80969f0be18d7b', 'name': 'Économie'},
-    {'id': '68018fc51f80969f0be18d7c', 'name': 'Politique'},
-    {'id': '68018fc51f80969f0be18d7d', 'name': 'Religion'},
-    {'id': '68018fc51f80969f0be18d7e', 'name': 'Santé'},
-    {'id': '68018fc51f80969f0be18d7f', 'name': 'Environnement'},
-    {'id': '68018fc51f80969f0be18d80', 'name': 'Sport'},
-    {'id': '662e6cbd4321efgh', 'name': 'Informatique'},
-    {'id': '662e6cbd4321efgh', 'name': 'Littérature'},
-  ];
+  List<Categorie> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+  }
+
+  Future<void> fetchCategories() async {
+    final response = await http.get(
+      Uri.parse('http://192.168.1.17:3000/categories'),
+    );
+
+    if (response.statusCode >= 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        _categories = data.map((json) => Categorie.fromJson(json)).toList();
+      });
+    }
+  }
 
   Future<void> _pickImage() async {
     final status = await Permission.photos.request();
@@ -82,6 +81,7 @@ class _CreateBookScreenState extends State<CreateBookScreen> {
     request.fields['title'] = _titleController.text;
     request.fields['description'] = _descriptionController.text;
     request.fields['price'] = _priceController.text;
+    request.fields['author'] = _authorController.text;
     request.fields['category'] = _selectedCategoryId!;
 
     final mimeType = lookupMimeType(_selectedImage!.path)!.split('/');
@@ -130,6 +130,12 @@ class _CreateBookScreenState extends State<CreateBookScreen> {
                 decoration: InputDecoration(labelText: 'Prix'),
                 validator: (value) => value!.isEmpty ? 'Entrez un prix' : null,
               ),
+              TextFormField(
+                controller: _authorController,
+                decoration: InputDecoration(labelText: 'Auteur'),
+                validator:
+                    (value) => value!.isEmpty ? 'Entrez un auteur' : null,
+              ),
               DropdownButtonFormField<String>(
                 value: _selectedCategoryId,
                 hint: Text('Choisir une catégorie'),
@@ -137,8 +143,8 @@ class _CreateBookScreenState extends State<CreateBookScreen> {
                     _categories
                         .map(
                           (cat) => DropdownMenuItem(
-                            value: cat['id'],
-                            child: Text(cat['name']!),
+                            value: cat.id,
+                            child: Text(cat.name),
                           ),
                         )
                         .toList(),
