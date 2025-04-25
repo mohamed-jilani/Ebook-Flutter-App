@@ -1,8 +1,12 @@
+import 'package:ebookstore_app/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../widgets/book_card.dart'; // Assure-toi que le chemin est correct
 import '../screens/book_detail_screen.dart'; // Import de la page de détail du livre
+import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
+import '../screens/cart_screen.dart';
 
 class BookListScreen extends StatefulWidget {
   const BookListScreen({super.key});
@@ -52,7 +56,32 @@ class _BookListScreenState extends State<BookListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Liste des livres")),
+      appBar: AppBar(
+        title: const Text("Liste des livres"),
+        actions: [
+          Consumer<CartProvider>(
+            builder: (context, cartProvider, _) {
+              return badges.Badge(
+                position: badges.BadgePosition.topEnd(top: 5, end: 5),
+                badgeContent: Text(
+                  cartProvider.cartCount.toString(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.shopping_cart),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CartScreen()),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+
       body:
           _isLoading
               ? const Center(child: CircularProgressIndicator())

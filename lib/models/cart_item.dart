@@ -1,4 +1,5 @@
 class CartItem {
+  final String id;
   final String bookId;
   final String title;
   final String author;
@@ -6,25 +7,22 @@ class CartItem {
   int quantity;
 
   CartItem({
+    required this.id,
     required this.bookId,
     required this.title,
     required this.author,
     required this.price,
-    this.quantity = 1,
+    required this.quantity,
   });
 
-  // Convertir l'objet CartItem en Map pour l'API
-  Map<String, dynamic> toJson() {
-    return {'bookId': bookId, 'quantity': quantity};
-  }
-
-  // Créer un CartItem à partir d'un Map (réponse de l'API)
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    final book = json['bookId'];
     return CartItem(
-      bookId: json['bookId'],
-      title: json['title'],
-      author: json['author'],
-      price: json['price'],
+      id: json['_id'],
+      bookId: book['_id'],
+      title: book['title'],
+      author: book['author'],
+      price: (book['price'] as num).toDouble(),
       quantity: json['quantity'],
     );
   }

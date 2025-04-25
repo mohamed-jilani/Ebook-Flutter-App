@@ -14,10 +14,18 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final TextEditingController _emailController ;
+  late final TextEditingController _passwordController ;
   bool _isLoading = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // Valeurs pré-remplies pour le développement
+    _emailController = TextEditingController(text: "jilanimed07@gmail.com");
+    _passwordController = TextEditingController(text: "jilajila");
+  }
 
   void _login(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
@@ -35,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (user != null) {
         Provider.of<AuthProvider>(context, listen: false).login(user);
-        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
         setState(() {
           _error = "Email ou mot de passe incorrect.";

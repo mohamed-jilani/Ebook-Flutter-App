@@ -13,7 +13,7 @@ class AuthService {
       body: jsonEncode({'email': email, 'password': password}),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode >= 200) {
       final data = jsonDecode(response.body);
       return User.fromJson(data['user']);
     } else {
