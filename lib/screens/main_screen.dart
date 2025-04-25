@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'book_list_screen.dart';
 import 'orders_screen.dart';
 import 'profile_screen.dart';
+import 'create_book_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -11,29 +12,42 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+  int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
-    BookListScreen(),
-    OrdersScreen(),
-    ProfileScreen(),
+  final List<Widget> _screens = [
+    const BookListScreen(),
+    const OrdersScreen(),
+    const CreateBookScreen(),
+    const ProfileScreen(),
   ];
+
+  final List<String> _titles = [
+    'Livres',
+    'Commandes',
+    'Créer un livre',
+    'Profil',
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() => _selectedIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
+      appBar: AppBar(title: Text(_titles[_selectedIndex])),
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-        },
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: Colors.blue,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book), label: 'Livres'),
+          BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Livres'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt),
+            icon: Icon(Icons.receipt_long),
             label: 'Commandes',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Créer'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),

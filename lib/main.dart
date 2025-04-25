@@ -1,5 +1,6 @@
 import 'package:ebookstore_app/providers/cart_provider.dart';
 import 'package:ebookstore_app/screens/cart_screen.dart';
+import 'package:ebookstore_app/screens/create_book_screen.dart';
 import 'package:ebookstore_app/screens/login_screen.dart';
 import 'package:ebookstore_app/screens/main_screen.dart';
 import 'package:ebookstore_app/screens/orders_screen.dart';
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         '/cart': (context) => const CartScreen(),
         '/Orders': (context) => const OrdersScreen(),
         '/Profile': (context) => const ProfileScreen(),
+        '/CreateBook': (context) => CreateBookScreen(),
       },
       initialRoute: '/login',
     );
