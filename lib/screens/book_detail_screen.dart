@@ -57,8 +57,18 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   }
 
   void _addToCart(BuildContext context) async {
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
-    if (user == null) return;
+    //final user = Provider.of<AuthProvider>(context, listen: false).user;
+    //if (user == null) return;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.user;
+
+    if (user == null) {
+      Navigator.pushNamed(
+        context,
+        '/login',
+      ); // rediriger vers login si non connecté
+      return;
+    }
 
     final String apiUrl = 'http://192.168.1.17:3000/cart/add';
     try {

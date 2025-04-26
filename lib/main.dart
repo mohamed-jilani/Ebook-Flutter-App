@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/Profile': (context) => const ProfileScreen(),
         '/CreateBook': (context) => CreateBookScreen(),
       },
-      initialRoute: '/login',
+      initialRoute: '/home',
     );
   }
 }
