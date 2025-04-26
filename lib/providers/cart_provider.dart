@@ -14,5 +14,16 @@ class CartProvider with ChangeNotifier {
     _cartCount++;
     notifyListeners();
   }
-  
+
+  void decrement() {
+    if (_cartCount > 0) {
+      _cartCount--;
+      notifyListeners();
+    }
+  }
+
+  void addToCart(String bookId) {
+    _cartCount++;
+    notifyListeners();
+  }
 }
